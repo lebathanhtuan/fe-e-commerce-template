@@ -1,12 +1,20 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Flex, Row, Col, Card, Button } from 'antd'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import * as S from './styled'
+
+import { getProducts } from '../../../redux/thunks/product.thunk'
 
 function ProductListPage() {
   const [page, setPage] = useState(1)
 
-  const { productList } = useSelector((state) => state.product)
+  const dispatch = useDispatch()
+
+  const { productList, loading } = useSelector((state) => state.product)
+
+  useEffect(() => {
+    dispatch(getProducts())
+  }, [])
 
   const renderProductItems = () => {
     const newProductList = productList.slice(0, page * 4)
@@ -27,9 +35,13 @@ function ProductListPage() {
 
   return (
     <S.Container>
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        {renderProductItems()}
-      </Row>
+      {loading ? (
+        <p>Loading....</p>
+      ) : (
+        <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+          {renderProductItems()}
+        </Row>
+      )}
       {productList.length > page * 4 && (
         <Flex justify="center">
           <Button onClick={() => setPage(page + 1)}>Load more</Button>

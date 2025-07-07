@@ -1,8 +1,14 @@
 import { Link } from 'react-router-dom'
+import { Button } from 'antd'
+import axios from 'axios'
 
 import { ROUTES } from '../../../constants/routes'
 
 function HomePage() {
+  const handleGetProducts = async () => {
+    const response = await axios.get('http://localhost:3001/products')
+    console.log('🚀 ~ handleGetProducts ~ result:', response.data)
+  }
   return (
     <div>
       <h1>Welcome to the Home Page</h1>
@@ -12,6 +18,7 @@ function HomePage() {
         <Link to={ROUTES.ADMIN.PRODUCTS}>Product Management</Link>
         page to manage products.
       </p>
+      <Button onClick={() => handleGetProducts()}>Get Products</Button>
     </div>
   )
 }

@@ -1,11 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { v4 as uuidv4 } from 'uuid'
 
+import { getProducts } from '../thunks/product.thunk'
+
 export const productSlice = createSlice({
   name: 'product',
   initialState: {
     productList: JSON.parse(localStorage.getItem('productList')) || [],
     productDetail: {},
+    loading: false,
   },
   reducers: {
     getProduct: (state, action) => {
@@ -43,6 +46,22 @@ export const productSlice = createSlice({
       )
       localStorage.setItem('productList', JSON.stringify(state.productList))
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(getProducts.pending, (state, action) => {
+        console.log('pending')
+        state.loading = true
+      })
+      .addCase(getProducts.fulfilled, (state, action) => {
+        console.log('fulfilled')
+        state.productList = action.payload
+        state.loading = false
+      })
+      .addCase(getProducts.rejected, (state, action) => {
+        console.log('rejected')
+        state.loading = false
+      })
   },
 })
 

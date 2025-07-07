@@ -1,0 +1,28 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Apple iPhone 16",
+      "price": 25000000,
+      "brandId": 1
+    },
+    {
+      "id": 2,
+      "name": "Apple iPhone 16 Pro",
+      "price": 30000000,
+      "brandId": 1
+    },
+    {
+      "id": 3,
+      "name": "Apple iPhone 16 Pro Max",
+      "price": 35000000,
+      "brandId": 1
+    }
+  ],
+  "brands": [
+    {
+      "id": 1,
+      "name": "Apple"
+    }
+  ]
+}
