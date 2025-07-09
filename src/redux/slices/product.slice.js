@@ -1,71 +1,101 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { v4 as uuidv4 } from 'uuid'
 
-import { getProducts } from '../thunks/product.thunk'
+import {
+  getProducts,
+  getProduct,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+} from '../thunks/product.thunk'
 
 export const productSlice = createSlice({
   name: 'product',
   initialState: {
-    productList: JSON.parse(localStorage.getItem('productList')) || [],
-    productDetail: {},
-    loading: false,
-  },
-  reducers: {
-    getProduct: (state, action) => {
-      const { id } = action.payload
-      state.productDetail = state.productList.find(
-        (product) => product.id === id
-      )
+    productList: {
+      data: [],
+      meta: {},
+      status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+      error: null,
     },
-    createProduct: (state, action) => {
-      const newProduct = {
-        id: uuidv4(),
-        ...action.payload,
-      }
-      state.productList.unshift(newProduct)
-      localStorage.setItem('productList', JSON.stringify(state.productList))
+    productDetail: {
+      data: {},
+      status: 'idle',
+      error: null,
     },
-    updateProduct: (state, action) => {
-      const { id, name, price } = action.payload
-      const productIndex = state.productList.findIndex(
-        (product) => product.id === id
-      )
-      if (productIndex !== -1) {
-        state.productList.splice(productIndex, 1, {
-          id: id,
-          name: name,
-          price: price,
-        })
-        localStorage.setItem('productList', JSON.stringify(state.productList))
-      }
+    createProductData: {
+      status: 'idle',
+      error: null,
     },
-    deleteProduct: (state, action) => {
-      const { id } = action.payload
-      state.productList = state.productList.filter(
-        (product) => product.id !== id
-      )
-      localStorage.setItem('productList', JSON.stringify(state.productList))
+    updateProductData: {
+      status: 'idle',
+      error: null,
+    },
+    deleteProductData: {
+      status: 'idle',
+      error: null,
     },
   },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(getProducts.pending, (state, action) => {
-        console.log('pending')
-        state.loading = true
+      // getProducts
+      .addCase(getProducts.pending, (state) => {
+        state.productList.status = 'loading'
       })
       .addCase(getProducts.fulfilled, (state, action) => {
-        console.log('fulfilled')
-        state.productList = action.payload
-        state.loading = false
+        state.productList.status = 'succeeded'
+        state.productList.data = action.payload
       })
       .addCase(getProducts.rejected, (state, action) => {
-        console.log('rejected')
-        state.loading = false
+        state.productList.status = 'failed'
+        state.productList.error = action.error.message
+      })
+      // getProduct
+      .addCase(getProduct.pending, (state) => {
+        state.productDetail.status = 'loading'
+      })
+      .addCase(getProduct.fulfilled, (state, action) => {
+        state.productDetail.status = 'succeeded'
+        state.productDetail.data = action.payload
+      })
+      .addCase(getProduct.rejected, (state, action) => {
+        state.productDetail.status = 'failed'
+        state.productDetail.error = action.error.message
+      })
+      // createProduct
+      .addCase(createProduct.pending, (state) => {
+        state.createProductData.status = 'loading'
+      })
+      .addCase(createProduct.fulfilled, (state) => {
+        state.createProductData.status = 'succeeded'
+      })
+      .addCase(createProduct.rejected, (state, action) => {
+        state.createProductData.status = 'failed'
+        state.productDetail.error = action.error.message
+      })
+      // updateProduct
+      .addCase(updateProduct.pending, (state) => {
+        state.updateProductData.status = 'loading'
+      })
+      .addCase(updateProduct.fulfilled, (state) => {
+        state.updateProductData.status = 'succeeded'
+      })
+      .addCase(updateProduct.rejected, (state, action) => {
+        state.updateProductData.status = 'failed'
+        state.productDetail.error = action.error.message
+      })
+      // deleteProduct
+      .addCase(deleteProduct.pending, (state) => {
+        state.deleteProductData.status = 'loading'
+      })
+      .addCase(deleteProduct.fulfilled, (state) => {
+        state.deleteProductData.status = 'succeeded'
+      })
+      .addCase(deleteProduct.rejected, (state, action) => {
+        state.deleteProductData.status = 'failed'
+        state.productDetail.error = action.error.message
       })
   },
 })
-
-export const { createProduct, updateProduct, deleteProduct, getProduct } =
-  productSlice.actions
 
 export default productSlice.reducer

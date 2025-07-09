@@ -1,18 +1,37 @@
-import { Space, Form, Button, Input, InputNumber } from 'antd'
+import { useEffect, useMemo } from 'react'
+import { Space, Form, Button, Input, InputNumber, Select } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { ROUTES } from '../../../constants/routes'
-import { createProduct } from '../../../redux/slices/product.slice'
+import { createProduct } from '../../../redux/thunks/product.thunk'
+import { getBrands } from '../../../redux/thunks/brand.thunk'
 
 function CreateProductPage() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
+  const { createProductData } = useSelector((state) => state.product)
+  const { brandList } = useSelector((state) => state.brand)
+
   const handleSubmit = (values) => {
-    dispatch(createProduct(values))
-    navigate(ROUTES.ADMIN.PRODUCTS)
+    dispatch(
+      createProduct({
+        data: values,
+        callback: () => navigate(ROUTES.ADMIN.PRODUCTS),
+      })
+    )
   }
+
+  useEffect(() => {
+    dispatch(getBrands())
+  }, [])
+
+  const renderBrandOptions = useMemo(() => {
+    return brandList.data.map((item) => {
+      return <Select.Option value={item.id}>{item.name}</Select.Option>
+    })
+  }, [brandList.data])
 
   return (
     <div>
@@ -33,6 +52,19 @@ function CreateProductPage() {
         </Form.Item>
 
         <Form.Item
+          label="Brand"
+          name="brandId"
+          rules={[{ required: true, message: 'Please input the brand!' }]}
+        >
+          <Select
+            placeholder="Enter brand"
+            loading={brandList.status === 'loading'}
+          >
+            {renderBrandOptions}
+          </Select>
+        </Form.Item>
+
+        <Form.Item
           label="Price"
           name="price"
           rules={[{ required: true, message: 'Please input the price!' }]}
@@ -47,12 +79,16 @@ function CreateProductPage() {
         <Form.Item>
           <Space>
             <Button
-              htmlType="buttom"
+              htmlType="button"
               onClick={() => navigate(ROUTES.ADMIN.PRODUCTS)}
             >
               Back
             </Button>
-            <Button type="primary" htmlType="submit">
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={createProductData.status === 'loading'}
+            >
               Create Product
             </Button>
           </Space>

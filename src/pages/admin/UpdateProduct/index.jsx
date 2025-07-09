@@ -1,43 +1,49 @@
-import { useEffect } from 'react'
-import { Space, Form, Button, Input, InputNumber } from 'antd'
-import { useNavigate, useParams, useLocation } from 'react-router-dom'
+import { useEffect, useMemo } from 'react'
+import { Space, Form, Button, Input, InputNumber, Select } from 'antd'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { ROUTES } from '../../../constants/routes'
-import { updateProduct, getProduct } from '../../../redux/slices/product.slice'
+import { getBrands } from '../../../redux/thunks/brand.thunk'
+import { getProduct, updateProduct } from '../../../redux/thunks/product.thunk'
 
 function UpdateProductPage() {
   const { id } = useParams()
   const [updateForm] = Form.useForm()
-  const location = useLocation()
-  console.log('🚀 ~ UpdateProductPage ~ location:', location)
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
   const { productDetail } = useSelector((state) => state.product)
-  console.log('🚀 ~ UpdateProductPage ~ productDetail:', productDetail)
+  const { brandList } = useSelector((state) => state.brand)
 
   const handleSubmit = (values) => {
     dispatch(
       updateProduct({
         id: id,
-        name: values.name,
-        price: values.price,
+        data: values,
+        callback: () => navigate(ROUTES.ADMIN.PRODUCTS),
       })
     )
-    navigate(ROUTES.ADMIN.PRODUCTS)
   }
 
   useEffect(() => {
+    dispatch(getBrands())
     dispatch(getProduct({ id: id }))
   }, [id])
 
   useEffect(() => {
     updateForm.setFieldsValue({
-      name: productDetail.name,
-      price: productDetail.price,
+      name: productDetail.data.name,
+      brandId: productDetail.data.brandId,
+      price: productDetail.data.price,
     })
-  }, [productDetail.id])
+  }, [productDetail.data.id])
+
+  const renderBrandOptions = useMemo(() => {
+    return brandList.data.map((item) => {
+      return <Select.Option value={item.id}>{item.name}</Select.Option>
+    })
+  }, [brandList.data])
 
   return (
     <div>
@@ -60,6 +66,19 @@ function UpdateProductPage() {
           ]}
         >
           <Input placeholder="Enter product name" />
+        </Form.Item>
+
+        <Form.Item
+          label="Brand"
+          name="brandId"
+          rules={[{ required: true, message: 'Please input the brand!' }]}
+        >
+          <Select
+            placeholder="Enter brand"
+            loading={brandList.status === 'loading'}
+          >
+            {renderBrandOptions}
+          </Select>
         </Form.Item>
 
         <Form.Item

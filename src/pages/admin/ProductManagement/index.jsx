@@ -1,9 +1,10 @@
+import { useEffect } from 'react'
 import { Flex, Table, Button, Space, Popconfirm } from 'antd'
 import { useNavigate, generatePath } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { ROUTES } from '../../../constants/routes'
-import { deleteProduct } from '../../../redux/slices/product.slice'
+import { getProducts, deleteProduct } from '../../../redux/thunks/product.thunk'
 
 function ProductManagementPage() {
   const navigate = useNavigate()
@@ -12,8 +13,17 @@ function ProductManagementPage() {
   const { productList } = useSelector((state) => state.product)
 
   const handleDeleteProduct = (id) => {
-    dispatch(deleteProduct({ id: id }))
+    dispatch(
+      deleteProduct({
+        id: id,
+        callback: () => dispatch(getProducts()),
+      })
+    )
   }
+
+  useEffect(() => {
+    dispatch(getProducts())
+  }, [])
 
   return (
     <div>
@@ -31,7 +41,8 @@ function ProductManagementPage() {
         </Button>
       </Flex>
       <Table
-        dataSource={productList}
+        loading={productList.status === 'loading'}
+        dataSource={productList.data}
         columns={[
           {
             title: 'ID',
@@ -44,9 +55,16 @@ function ProductManagementPage() {
             key: 'name',
           },
           {
+            title: 'Brand',
+            dataIndex: 'brand',
+            key: 'brand',
+            render: (_, record) => record.brand.name,
+          },
+          {
             title: 'Price',
             dataIndex: 'price',
             key: 'price',
+            render: (_, record) => record.price.toLocaleString(),
           },
           {
             title: 'Actions',
