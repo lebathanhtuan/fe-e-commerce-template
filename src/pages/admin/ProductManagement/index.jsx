@@ -55,10 +55,10 @@ function ProductManagementPage() {
             key: 'name',
           },
           {
-            title: 'Brand',
-            dataIndex: 'brand',
-            key: 'brand',
-            render: (_, record) => record.brand.name,
+            title: 'Category',
+            dataIndex: 'category',
+            key: 'category',
+            render: (_, record) => record.category_name,
           },
           {
             title: 'Price',

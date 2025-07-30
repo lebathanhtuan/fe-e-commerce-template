@@ -2,6 +2,10 @@ import { Routes, Route } from 'react-router-dom'
 // Layout
 import AdminLayout from './layouts/AdminLayout'
 import UserLayout from './layouts/UserLayout'
+
+import Register from './pages/Register'
+import Login from './pages/Login'
+
 // User pages
 import HomePage from './pages/user/Home'
 import ProductListPage from './pages/user/ProductList'
@@ -18,6 +22,9 @@ function App() {
       <Route element={<UserLayout />}>
         <Route path={ROUTES.USER.HOME} element={<HomePage />} />
         <Route path={ROUTES.USER.PRODUCTS} element={<ProductListPage />} />
+
+        <Route path={ROUTES.REGISTER} element={<Register />} />
+        <Route path={ROUTES.LOGIN} element={<Login />} />
       </Route>
 
       <Route element={<AdminLayout />}>

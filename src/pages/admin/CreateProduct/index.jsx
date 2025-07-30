@@ -5,14 +5,14 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { ROUTES } from '../../../constants/routes'
 import { createProduct } from '../../../redux/thunks/product.thunk'
-import { getBrands } from '../../../redux/thunks/brand.thunk'
+import { getCategories } from '../../../redux/thunks/category.thunk'
 
 function CreateProductPage() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
   const { createProductData } = useSelector((state) => state.product)
-  const { brandList } = useSelector((state) => state.brand)
+  const { categoryList } = useSelector((state) => state.category)
 
   const handleSubmit = (values) => {
     dispatch(
@@ -24,14 +24,14 @@ function CreateProductPage() {
   }
 
   useEffect(() => {
-    dispatch(getBrands())
+    dispatch(getCategories())
   }, [])
 
-  const renderBrandOptions = useMemo(() => {
-    return brandList.data.map((item) => {
+  const renderCategoryOptions = useMemo(() => {
+    return categoryList.data.map((item) => {
       return <Select.Option value={item.id}>{item.name}</Select.Option>
     })
-  }, [brandList.data])
+  }, [categoryList.data])
 
   return (
     <div>
@@ -52,15 +52,15 @@ function CreateProductPage() {
         </Form.Item>
 
         <Form.Item
-          label="Brand"
-          name="brandId"
-          rules={[{ required: true, message: 'Please input the brand!' }]}
+          label="Category"
+          name="categoryId"
+          rules={[{ required: true, message: 'Please input the category!' }]}
         >
           <Select
-            placeholder="Enter brand"
-            loading={brandList.status === 'loading'}
+            placeholder="Enter category"
+            loading={categoryList.status === 'loading'}
           >
-            {renderBrandOptions}
+            {renderCategoryOptions}
           </Select>
         </Form.Item>
 
