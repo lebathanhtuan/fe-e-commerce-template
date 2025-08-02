@@ -1,4 +1,7 @@
+import { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+
 // Layout
 import AdminLayout from './layouts/AdminLayout'
 import UserLayout from './layouts/UserLayout'
@@ -16,7 +19,16 @@ import UpdateProductPage from './pages/admin/UpdateProduct'
 
 import { ROUTES } from './constants/routes'
 
+import { getMyProfile } from './redux/thunks/auth.thunk'
+
 function App() {
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    if (!localStorage.getItem('accessToken')) return
+    dispatch(getMyProfile())
+  }, [])
+
   return (
     <Routes>
       <Route element={<UserLayout />}>

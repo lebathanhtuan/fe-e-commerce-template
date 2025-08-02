@@ -1,10 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-import { register, login } from '../thunks/auth.thunk'
+import { register, login, getMyProfile } from '../thunks/auth.thunk'
 
 export const authSlice = createSlice({
   name: 'auth',
   initialState: {
+    myProfile: {
+      data: {},
+      status: 'idle',
+      error: null,
+    },
     registerData: {
       status: 'idle',
       error: null,
@@ -21,9 +26,8 @@ export const authSlice = createSlice({
       .addCase(register.pending, (state) => {
         state.registerData.status = 'loading'
       })
-      .addCase(register.fulfilled, (state, action) => {
+      .addCase(register.fulfilled, (state) => {
         state.registerData.status = 'succeeded'
-        state.registerData.data = action.payload
       })
       .addCase(register.rejected, (state, action) => {
         state.registerData.status = 'failed'
@@ -34,14 +38,26 @@ export const authSlice = createSlice({
         state.loginData.status = 'loading'
       })
       .addCase(login.fulfilled, (state, action) => {
-        console.log('🚀 ~ action.payload.token:', action.payload.token)
-        localStorage.setItem('accessToken', action.payload.token)
+        const { token, user } = action.payload
+        localStorage.setItem('accessToken', token)
         state.loginData.status = 'succeeded'
-        state.loginData.data = action.payload
+        state.myProfile.data = user
       })
       .addCase(login.rejected, (state, action) => {
         state.loginData.status = 'failed'
         state.loginData.error = action.error.message
+      })
+      // getMyProfile
+      .addCase(getMyProfile.pending, (state) => {
+        state.myProfile.status = 'loading'
+      })
+      .addCase(getMyProfile.fulfilled, (state, action) => {
+        state.myProfile.status = 'succeeded'
+        state.myProfile.data = action.payload
+      })
+      .addCase(getMyProfile.rejected, (state, action) => {
+        state.myProfile.status = 'failed'
+        state.myProfile.error = action.error.message
       })
   },
 })

@@ -18,6 +18,17 @@ export const login = createAsyncThunk('auth/login', async (params) => {
     data
   )
   if (callback) callback()
-  console.log('🚀 ~ response.data:', response.data)
+  return response.data
+})
+
+export const getMyProfile = createAsyncThunk('auth/getMyProfile', async () => {
+  const response = await axios.get(
+    'http://localhost:3000/api/auth/my-profile',
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken') || ''}`,
+      },
+    }
+  )
   return response.data
 })

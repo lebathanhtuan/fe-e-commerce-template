@@ -1,10 +1,18 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 
-export const getProducts = createAsyncThunk('product/getProducts', async () => {
-  const response = await axios.get('http://localhost:3000/api/products')
-  return response.data
-})
+export const getProducts = createAsyncThunk(
+  'product/getProducts',
+  async (params) => {
+    const response = await axios.get('http://localhost:3000/api/products', {
+      params: params,
+    })
+    return {
+      ...response.data,
+      more: params.more,
+    }
+  }
+)
 
 export const getProduct = createAsyncThunk(
   'product/getProduct',

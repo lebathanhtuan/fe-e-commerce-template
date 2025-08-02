@@ -43,8 +43,12 @@ export const productSlice = createSlice({
         state.productList.status = 'loading'
       })
       .addCase(getProducts.fulfilled, (state, action) => {
+        const { data, meta, more } = action.payload
         state.productList.status = 'succeeded'
-        state.productList.data = action.payload
+        state.productList.data = more
+          ? [...state.productList.data, ...data]
+          : data
+        state.productList.meta = meta
       })
       .addCase(getProducts.rejected, (state, action) => {
         state.productList.status = 'failed'
