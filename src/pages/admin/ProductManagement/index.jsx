@@ -22,7 +22,7 @@ function ProductManagementPage() {
   }
 
   useEffect(() => {
-    dispatch(getProducts())
+    dispatch(getProducts({}))
   }, [])
 
   return (

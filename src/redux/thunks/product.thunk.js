@@ -1,12 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+
+import api from '../../services/api'
 
 export const getProducts = createAsyncThunk(
   'product/getProducts',
   async (params) => {
-    const response = await axios.get('http://localhost:3000/api/products', {
-      params: params,
-    })
+    const response = await api.get('/products', { params: params })
     return {
       ...response.data,
       more: params.more,
@@ -17,9 +16,7 @@ export const getProducts = createAsyncThunk(
 export const getProduct = createAsyncThunk(
   'product/getProduct',
   async (params) => {
-    const response = await axios.get(
-      `http://localhost:3000/api/products/${params.id}`
-    )
+    const response = await api.get(`/products/${params.id}`)
     return response.data
   }
 )
@@ -27,10 +24,7 @@ export const getProduct = createAsyncThunk(
 export const createProduct = createAsyncThunk(
   'product/createProduct',
   async (params) => {
-    const response = await axios.post(
-      'http://localhost:3000/api/products',
-      params.data
-    )
+    const response = await api.post('/products', params.data)
     params.callback()
     return response.data
   }
@@ -39,10 +33,7 @@ export const createProduct = createAsyncThunk(
 export const updateProduct = createAsyncThunk(
   'product/updateProduct',
   async (params) => {
-    const response = await axios.patch(
-      `http://localhost:3000/api/products/${params.id}`,
-      params.data
-    )
+    const response = await api.patch(`/products/${params.id}`, params.data)
     params.callback()
     return response.data
   }
@@ -51,9 +42,7 @@ export const updateProduct = createAsyncThunk(
 export const deleteProduct = createAsyncThunk(
   'product/deleteProduct',
   async (params) => {
-    const response = await axios.delete(
-      `http://localhost:3000/api/products/${params.id}`
-    )
+    const response = await api.delete(`/products/${params.id}`)
     params.callback()
     return response.data
   }

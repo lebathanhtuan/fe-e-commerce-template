@@ -38,8 +38,11 @@ export const authSlice = createSlice({
         state.loginData.status = 'loading'
       })
       .addCase(login.fulfilled, (state, action) => {
-        const { token, user } = action.payload
-        localStorage.setItem('accessToken', token)
+        const { accessToken, refreshToken, user } = action.payload
+
+        localStorage.setItem('accessToken', accessToken)
+        localStorage.setItem('refreshToken', refreshToken)
+
         state.loginData.status = 'succeeded'
         state.myProfile.data = user
       })
