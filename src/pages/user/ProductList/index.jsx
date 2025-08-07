@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Flex, Row, Col, Card, Button, Radio, Input } from 'antd'
+import { Flex, Row, Col, Card, Button, Radio, Checkbox, Input } from 'antd'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { getProducts } from '../../../redux/thunks/product.thunk'
@@ -11,7 +11,7 @@ import * as S from './styled'
 
 function ProductListPage() {
   const [filterParams, setFilterParams] = useState({
-    categoryId: undefined,
+    categoryIds: [],
     q: '',
     sort: 'id',
     order: 'asc',
@@ -51,9 +51,9 @@ function ProductListPage() {
 
   const renderCategoryOptions = useMemo(() => {
     return categoryList.data.map((item) => (
-      <Radio key={item.id} value={item.id}>
+      <Checkbox key={item.id} value={item.id}>
         {item.name}
-      </Radio>
+      </Checkbox>
     ))
   }, [categoryList.data])
 
@@ -78,13 +78,13 @@ function ProductListPage() {
       <Row gutter={[16, 16]}>
         <Col span={6}>
           <Card title="Filter categories" style={{ width: '100%' }}>
-            <Radio.Group
-              onChange={(e) => handleFilter('categoryId', e.target.value)}
-              value={filterParams.categoryId}
+            <Checkbox.Group
+              onChange={(values) => handleFilter('categoryIds', values)}
+              value={filterParams.categoryIds}
               style={{ display: 'flex', flexDirection: 'column' }}
             >
               {renderCategoryOptions}
-            </Radio.Group>
+            </Checkbox.Group>
           </Card>
         </Col>
         <Col span={18}>
