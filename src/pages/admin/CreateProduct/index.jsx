@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Space, Form, Button, Input, InputNumber, Select } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -8,6 +8,8 @@ import { createProduct } from '../../../redux/thunks/product.thunk'
 import { getCategories } from '../../../redux/thunks/category.thunk'
 
 function CreateProductPage() {
+  const [productImage, setProductImage] = useState(null)
+
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
@@ -15,9 +17,19 @@ function CreateProductPage() {
   const { categoryList } = useSelector((state) => state.category)
 
   const handleSubmit = (values) => {
+    const formData = new FormData()
+
+    formData.append('name', values.name)
+    formData.append('categoryId', values.categoryId)
+    formData.append('price', values.price)
+    console.log('🚀 ~ handleSubmit ~ productImage:', productImage)
+    if (productImage) {
+      formData.append('image', productImage)
+    }
+
     dispatch(
       createProduct({
-        data: values,
+        data: formData,
         callback: () => navigate(ROUTES.ADMIN.PRODUCTS),
       })
     )
@@ -73,6 +85,13 @@ function CreateProductPage() {
             placeholder="Enter price"
             min={0}
             style={{ width: '100%' }}
+          />
+        </Form.Item>
+
+        <Form.Item>
+          <input
+            type="file"
+            onChange={(e) => setProductImage(e.target.files[0])}
           />
         </Form.Item>
 

@@ -3,6 +3,7 @@ import { Flex, Table, Button, Space, Popconfirm } from 'antd'
 import { useNavigate, generatePath } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
+import { END_POINT } from '../../../services/api'
 import { ROUTES } from '../../../constants/routes'
 import { getProducts, deleteProduct } from '../../../redux/thunks/product.thunk'
 
@@ -22,7 +23,12 @@ function ProductManagementPage() {
   }
 
   useEffect(() => {
-    dispatch(getProducts({}))
+    dispatch(
+      getProducts({
+        page: 1,
+        limit: 100,
+      })
+    )
   }, [])
 
   return (
@@ -50,6 +56,19 @@ function ProductManagementPage() {
             key: 'id',
           },
           {
+            title: 'Image',
+            dataIndex: 'image',
+            key: 'image',
+            render: (image) =>
+              image && (
+                <img
+                  src={`${END_POINT}/${image}`}
+                  alt="Product"
+                  style={{ width: 50, height: 50, objectFit: 'cover' }}
+                />
+              ),
+          },
+          {
             title: 'Product Name',
             dataIndex: 'name',
             key: 'name',
@@ -58,7 +77,7 @@ function ProductManagementPage() {
             title: 'Category',
             dataIndex: 'category',
             key: 'category',
-            render: (_, record) => record.category_name,
+            render: (_, record) => record.category.name,
           },
           {
             title: 'Price',
