@@ -1,22 +1,50 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from 'antd'
-import axios from 'axios'
+import { useSelector } from 'react-redux'
+import io from 'socket.io-client'
 
 import { ROUTES } from '../../../constants/routes'
 
+const socket = io('http://localhost:3000')
+
 function HomePage() {
-  const handleGetProducts = async () => {
-    const response = await axios.get('http://localhost:3001/products/abc')
-    console.log('🚀 ~ handleGetProducts ~ result:', response.data)
-    alert(response.data.name)
-  }
-  const handleCreateProduct = async () => {
-    const response = await axios.post('http://localhost:3001/products', {
-      name: 'iPhong 16 Pro',
-      price: 30000000,
+  const [messages, setMessages] = useState([])
+  const [newMessage, setNewMessage] = useState('')
+  const [roomName, setRoomName] = useState('')
+
+  const { myProfile } = useSelector((state) => state.auth)
+
+  useEffect(() => {
+    const userId = myProfile.data.id
+    const currentRoom = userId ? `user_${userId}` : `guest_${socket.id}`
+    setRoomName(currentRoom)
+
+    const userData = userId ? { userId: userId } : { questId: socket.id }
+    socket.emit('client_join_chat', userData)
+
+    socket.on('receive_message', (data) => {
+      if (data.roomName === roomName) {
+        setMessages((prev) => [...prev, data])
+      }
     })
-    console.log('🚀 ~ handleCreateProduct ~ response:', response.data)
+
+    return () => {
+      socket.off('receive_message')
+    }
+  }, [myProfile.data.id, roomName])
+
+  const handleSendMessage = (e) => {
+    e.preventDefault()
+    if (!newMessage || !roomName) return
+    const message = {
+      message: newMessage,
+      roomName: roomName,
+    }
+    socket.emit('client_send_message', message)
+    setNewMessage('')
   }
+
   return (
     <div>
       <h1>Welcome to the Home Page</h1>
@@ -26,8 +54,26 @@ function HomePage() {
         <Link to={ROUTES.ADMIN.PRODUCTS}>Product Management</Link>
         page to manage products.
       </p>
-      <Button onClick={() => handleGetProducts()}>Get Products</Button>
-      <Button onClick={() => handleCreateProduct()}>Create Product</Button>
+      <div>
+        <div>Chat</div>
+        <div>
+          {messages.map((msg, index) => (
+            <p key={index}>
+              <strong>{msg.sender !== 'Shop' ? 'Bạn' : 'Shop'}: </strong>
+              <span>{msg.message}</span>
+            </p>
+          ))}
+        </div>
+        <form onSubmit={handleSendMessage}>
+          <input
+            type="text"
+            placeholder="Type your message here..."
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+          />
+          <button type="submit">Send</button>
+        </form>
+      </div>
     </div>
   )
 }
