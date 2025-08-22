@@ -18,7 +18,6 @@ function ProductListPage() {
     page: 1,
     limit: PRODUCT_LIMIT,
   })
-  console.log('🚀 ~ ProductListPage ~ filterParams:', filterParams)
 
   const dispatch = useDispatch()
 
@@ -61,6 +60,7 @@ function ProductListPage() {
     return productList.data.map((product) => (
       <Col span={6} key={product.id}>
         <Card
+          size="small"
           hoverable
           cover={
             <img alt={product.name} src={'https://placehold.co/600x400'} />
@@ -77,7 +77,11 @@ function ProductListPage() {
     <S.Container>
       <Row gutter={[16, 16]}>
         <Col span={6}>
-          <Card title="Filter categories" style={{ width: '100%' }}>
+          <Card
+            title="Filter categories"
+            size="small"
+            style={{ width: '100%' }}
+          >
             <Checkbox.Group
               onChange={(values) => handleFilter('categoryIds', values)}
               value={filterParams.categoryIds}

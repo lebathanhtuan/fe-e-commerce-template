@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export const END_POINT = 'http://localhost:3000'
+export const END_POINT = import.meta.env.VITE_END_POINT
 export const BASE_URL = `${END_POINT}/api`
 
 const api = axios.create({

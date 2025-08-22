@@ -1,19 +1,21 @@
 import { Outlet } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+
+import UserHeader from '@components/UserHeader'
+import UserFooter from '@components/UserFooter'
+import ChatBox from '@components/ChatBox'
+
+import * as S from './styled'
 
 function UserLayout() {
-  const { myProfile } = useSelector((state) => state.auth)
-
   return (
-    <>
-      <div>
-        <div style={{ backgroundColor: 'gray', padding: 16 }}>
-          User Header - {myProfile.data.username}
-        </div>
+    <S.LayoutContainer>
+      <UserHeader />
+      <S.MainContainer>
         <Outlet />
-        <div style={{ backgroundColor: 'gray', padding: 16 }}>User Footer</div>
-      </div>
-    </>
+      </S.MainContainer>
+      <UserFooter />
+      <ChatBox />
+    </S.LayoutContainer>
   )
 }
 

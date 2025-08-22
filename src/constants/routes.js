@@ -4,6 +4,7 @@ export const ROUTES = {
     PRODUCTS: '/products',
   },
   ADMIN: {
+    DASHBOARD: '/admin/dashboard',
     PRODUCTS: '/admin/products',
     CREATE_PRODUCT: '/admin/products/create',
     UPDATE_PRODUCT: '/admin/products/:id/update',

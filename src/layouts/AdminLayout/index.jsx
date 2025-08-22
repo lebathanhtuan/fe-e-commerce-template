@@ -1,28 +1,35 @@
-import { useState } from 'react'
-import { Outlet } from 'react-router-dom'
-import AdminHeader from '../../components/layouts/AdminHeader'
-import AdminSidebar from '../../components/layouts/AdminSidebar'
+import { Outlet, Navigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+
+import AdminHeader from '@components/AdminHeader'
+import AdminSidebar from '@components/AdminSidebar'
+import LoadingPage from '@components/LoadingPage'
+
+import { ROUTES } from '@constants/routes'
 
 import * as S from './styled'
 
 function AdminLayout() {
-  const [isShowSidebar, setIsShowSidebar] = useState(false)
+  const { isShowAdminSidebar } = useSelector((state) => state.common)
+  const { myProfile } = useSelector((state) => state.auth)
+
+  const accessToken = localStorage.getItem('accessToken')
+
+  if (accessToken && myProfile.status !== 'succeeded') {
+    return <LoadingPage />
+  } else if (myProfile.data.role !== 'admin') {
+    return <Navigate to={ROUTES.USER.HOME} />
+  }
   return (
-    <S.AppContainer>
-      <AdminHeader
-        isShowSidebar={isShowSidebar}
-        setIsShowSidebar={setIsShowSidebar}
-      />
-      <S.MainContainer>
-        <AdminSidebar
-          isShowSidebar={isShowSidebar}
-          setIsShowSidebar={setIsShowSidebar}
-        />
-        <S.ContentContainer isShowSidebar={isShowSidebar}>
+    <S.AppWrapper>
+      <AdminHeader />
+      <S.AppContainer>
+        <AdminSidebar />
+        <S.AppContent $isShowAdminSidebar={isShowAdminSidebar}>
           <Outlet />
-        </S.ContentContainer>
-      </S.MainContainer>
-    </S.AppContainer>
+        </S.AppContent>
+      </S.AppContainer>
+    </S.AppWrapper>
   )
 }
 
