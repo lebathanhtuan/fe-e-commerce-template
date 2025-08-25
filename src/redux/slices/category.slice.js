@@ -29,7 +29,4 @@ export const categorySlice = createSlice({
   },
 })
 
-export const { createCategory, updateCategory, deleteCategory, getCategory } =
-  categorySlice.actions
-
 export default categorySlice.reducer

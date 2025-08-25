@@ -83,7 +83,7 @@ function ProductManagementPage() {
             title: 'Price',
             dataIndex: 'price',
             key: 'price',
-            render: (_, record) => record.price.toLocaleString(),
+            render: (_, record) => parseInt(record.price).toLocaleString(),
           },
           {
             title: 'Actions',

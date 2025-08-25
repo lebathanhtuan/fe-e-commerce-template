@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate, Link } from 'react-router-dom'
 import { Dropdown, Space, Button, Badge, Input, Avatar } from 'antd'
 import {
@@ -10,11 +10,13 @@ import {
 } from '@ant-design/icons'
 
 import { ROUTES } from '@constants/routes'
+import { logout } from '@redux/slices/auth.slice'
 
 import * as S from './styled'
 
 function UserHeader() {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const { myProfile } = useSelector((state) => state.auth)
 
@@ -22,7 +24,9 @@ function UserHeader() {
     <S.HeaderContainer>
       <h2>Menu</h2>
       <S.HeaderNavigation>
-        <Link to={ROUTES.USER.PRODUCTS}>Sản phẩm</Link>
+        <Link to={ROUTES.USER.PRODUCTS} style={{ color: 'white' }}>
+          Sản phẩm
+        </Link>
       </S.HeaderNavigation>
       <Space size={24}>
         <Badge count={3}>
@@ -60,12 +64,12 @@ function UserHeader() {
                     key: '2',
                     label: 'Thông tin cá nhân',
                     icon: <UserOutlined />,
-                    onClick: () => navigate(ROUTES.USER.PROFILE),
+                    onClick: () => navigate(ROUTES.USER.MY_PROFILE.USER_INFO),
                   },
                   {
                     key: '3',
                     label: 'Đăng xuất',
-                    // onClick: () => dispatch(logoutRequest()),
+                    onClick: () => dispatch(logout()),
                     icon: <LogoutOutlined />,
                   },
                 ],

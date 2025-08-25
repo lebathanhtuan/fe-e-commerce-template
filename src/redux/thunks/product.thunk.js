@@ -37,7 +37,7 @@ export const createProduct = createAsyncThunk(
 export const updateProduct = createAsyncThunk(
   'product/updateProduct',
   async (params) => {
-    const response = await api.patch(`/products/${params.id}`, params.data)
+    const response = await api.put(`/products/${params.id}`, params.data)
     params.callback()
     return response.data
   }

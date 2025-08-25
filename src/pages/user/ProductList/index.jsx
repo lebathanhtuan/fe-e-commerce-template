@@ -1,11 +1,13 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Flex, Row, Col, Card, Button, Radio, Checkbox, Input } from 'antd'
 import { useSelector, useDispatch } from 'react-redux'
+import { Link, generatePath } from 'react-router-dom'
 
-import { getProducts } from '../../../redux/thunks/product.thunk'
-import { getCategories } from '../../../redux/thunks/category.thunk'
+import { getProducts } from '@redux/thunks/product.thunk'
+import { getCategories } from '@redux/thunks/category.thunk'
 
-import { PRODUCT_LIMIT } from '../../../constants/paging'
+import { PRODUCT_LIMIT } from '@constants/paging'
+import { ROUTES } from '@constants/routes'
 
 import * as S from './styled'
 
@@ -56,22 +58,24 @@ function ProductListPage() {
     ))
   }, [categoryList.data])
 
-  const renderProductItems = () => {
+  const renderProductItems = useMemo(() => {
     return productList.data.map((product) => (
       <Col span={6} key={product.id}>
-        <Card
-          size="small"
-          hoverable
-          cover={
-            <img alt={product.name} src={'https://placehold.co/600x400'} />
-          }
-          style={{ width: '100%' }}
-        >
-          <Card.Meta title={product.name} description={product.price} />
-        </Card>
+        <Link to={generatePath(ROUTES.USER.PRODUCT_DETAIL, { id: product.id })}>
+          <Card
+            size="small"
+            hoverable
+            cover={
+              <img alt={product.name} src={'https://placehold.co/600x400'} />
+            }
+            style={{ width: '100%' }}
+          >
+            <Card.Meta title={product.name} description={product.price} />
+          </Card>
+        </Link>
       </Col>
     ))
-  }
+  }, [productList.data])
 
   return (
     <S.Container>
@@ -101,7 +105,7 @@ function ProductListPage() {
             <p>Loading....</p>
           ) : (
             <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-              {renderProductItems()}
+              {renderProductItems}
             </Row>
           )}
           {productList.data.length < productList.meta.total && (

@@ -10,7 +10,7 @@ import {
 
 import { ROUTES } from '@constants/routes'
 import { toggleAdminSidebar } from '@redux/slices/common.slice'
-// import { logoutRequest } from '@redux/slices/auth.slice'
+import { logout } from '@redux/slices/auth.slice'
 
 import * as S from './styled'
 
@@ -52,7 +52,10 @@ function Header() {
                   key: '2',
                   label: 'Đăng xuất',
                   icon: <LogoutOutlined />,
-                  // onClick: () => dispatch(logoutRequest()),
+                  onClick: () => {
+                    dispatch(logout())
+                    navigate(ROUTES.LOGIN)
+                  },
                 },
               ],
             }}
