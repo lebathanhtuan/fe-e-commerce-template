@@ -37,7 +37,7 @@ function Profile() {
     return PROFILE_MENU.find((item) => item.path === pathname)?.label
   }, [pathname])
 
-  if (accessToken && myProfile.loading) {
+  if (accessToken && myProfile.status !== 'succeeded') {
     return <LoadingPage />
   } else if (!myProfile.data.id) {
     return <Navigate to={ROUTES.USER.HOME} />
