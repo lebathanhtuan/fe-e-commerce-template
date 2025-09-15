@@ -33,6 +33,8 @@ export const authSlice = createSlice({
       localStorage.removeItem('accessToken')
       localStorage.removeItem('refreshToken')
       state.myProfile.data = {}
+      state.myProfile.status = 'idle'
+      state.myProfile.error = null
     },
   },
   extraReducers: (builder) => {
@@ -53,6 +55,7 @@ export const authSlice = createSlice({
       .addCase(login.pending, (state) => {
         state.loginData.status = 'loading'
         state.loginData.error = null
+        state.myProfile.status = 'loading'
       })
       .addCase(login.fulfilled, (state, action) => {
         const { accessToken, refreshToken, user } = action.payload
@@ -61,10 +64,12 @@ export const authSlice = createSlice({
         localStorage.setItem('refreshToken', refreshToken)
 
         state.loginData.status = 'succeeded'
+        state.myProfile.status = 'succeeded'
         state.myProfile.data = user
       })
       .addCase(login.rejected, (state, action) => {
         state.loginData.status = 'failed'
+        state.myProfile.status = 'failed'
         state.loginData.error = action.error.message
       })
       // getMyProfile

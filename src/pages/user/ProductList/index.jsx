@@ -60,7 +60,7 @@ function ProductListPage() {
 
   const renderProductItems = useMemo(() => {
     return productList.data.map((product) => (
-      <Col span={6} key={product.id}>
+      <Col xs={8} md={8} lg={6} key={product.id}>
         <Link to={generatePath(ROUTES.USER.PRODUCT_DETAIL, { id: product.id })}>
           <Card
             size="small"
@@ -80,7 +80,7 @@ function ProductListPage() {
   return (
     <S.Container>
       <Row gutter={[16, 16]}>
-        <Col span={6}>
+        <Col xs={24} md={6}>
           <Card
             title="Filter categories"
             size="small"
@@ -95,7 +95,7 @@ function ProductListPage() {
             </Checkbox.Group>
           </Card>
         </Col>
-        <Col span={18}>
+        <Col xs={24} md={18}>
           <Input.Search
             placeholder="Search products..."
             onSearch={(value) => handleFilter('q', value)}

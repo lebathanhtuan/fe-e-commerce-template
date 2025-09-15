@@ -16,6 +16,7 @@ import RegisterPage from './pages/Register'
 import HomePage from './pages/user/Home'
 import ProductListPage from './pages/user/ProductList'
 import ProductDetailPage from './pages/user/ProductDetail'
+import CartPage from './pages/user/Cart'
 import UserInfoPage from './pages/user/UserInfo'
 import ChangePasswordPage from './pages/user/ChangePassword'
 // Admin pages
@@ -46,6 +47,7 @@ function App() {
           path={ROUTES.USER.PRODUCT_DETAIL}
           element={<ProductDetailPage />}
         />
+        <Route path={ROUTES.USER.CART} element={<CartPage />} />
         <Route element={<MyProfileLayout />}>
           <Route
             path={ROUTES.USER.MY_PROFILE.USER_INFO}
