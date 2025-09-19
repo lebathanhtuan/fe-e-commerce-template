@@ -17,6 +17,7 @@ import HomePage from './pages/user/Home'
 import ProductListPage from './pages/user/ProductList'
 import ProductDetailPage from './pages/user/ProductDetail'
 import CartPage from './pages/user/Cart'
+import CheckoutPage from './pages/user/Checkout'
 import UserInfoPage from './pages/user/UserInfo'
 import ChangePasswordPage from './pages/user/ChangePassword'
 // Admin pages
@@ -29,6 +30,7 @@ import ChatBoxPage from './pages/admin/ChatBox'
 import { ROUTES } from './constants/routes'
 
 import { getMyProfile } from './redux/thunks/auth.thunk'
+import { getCartItems } from './redux/thunks/cart.thunk'
 
 function App() {
   const dispatch = useDispatch()
@@ -36,6 +38,7 @@ function App() {
   useEffect(() => {
     if (!localStorage.getItem('accessToken')) return
     dispatch(getMyProfile())
+    dispatch(getCartItems())
   }, [])
 
   return (
@@ -48,6 +51,7 @@ function App() {
           element={<ProductDetailPage />}
         />
         <Route path={ROUTES.USER.CART} element={<CartPage />} />
+        <Route path={ROUTES.USER.CHECKOUT} element={<CheckoutPage />} />
         <Route element={<MyProfileLayout />}>
           <Route
             path={ROUTES.USER.MY_PROFILE.USER_INFO}

@@ -14,15 +14,33 @@ import { Link, useNavigate } from 'react-router-dom'
 import { HomeOutlined } from '@ant-design/icons'
 
 import { ROUTES } from '@constants/routes'
+import { updateCartItem, deleteCartItem } from '@redux/thunks/cart.thunk'
 
 function CartPage() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const cartList = []
-  const totalPrice = 0
+  const { cartItems } = useSelector((state) => state.cart)
 
-  const handleChangeQuantity = (productId, value) => {}
+  const totalPrice = useMemo(
+    () =>
+      cartItems.data.reduce((total, item) => {
+        return total + item.quantity * parseFloat(item.product.price)
+      }, 0),
+    [cartItems.data]
+  )
+
+  // const totalPrice = useMemo(() => {
+  //   let total = 0
+  //   cartItems.data.forEach((item) => {
+  //     total += item.quantity * parseFloat(item.product.price)
+  //   })
+  //   return total
+  // }, [cartItems.data])
+
+  const handleChangeQuantity = (cartId, value) => {
+    dispatch(updateCartItem({ id: cartId, quantity: value }))
+  }
 
   const handleDeleteCartItem = (productId) => {}
 
@@ -31,13 +49,14 @@ function CartPage() {
       title: 'Tên sản phẩm',
       dataIndex: 'name',
       key: 'name',
+      render: (_, item) => item.product.name,
     },
     {
       title: 'Đơn giá',
       dataIndex: 'price',
       key: 'price',
       render: (_, item) => {
-        return `${item.price.toLocaleString()} VNĐ`
+        return `${parseFloat(item.product.price).toLocaleString()} VNĐ`
       },
     },
     {
@@ -48,7 +67,7 @@ function CartPage() {
         <InputNumber
           value={item.quantity}
           min={1}
-          onChange={(value) => handleChangeQuantity(item.productId, value)}
+          onChange={(value) => handleChangeQuantity(item.id, value)}
         />
       ),
     },
@@ -57,7 +76,9 @@ function CartPage() {
       dataIndex: 'total',
       key: 'total',
       render: (_, item) =>
-        `${(item.price * item.quantity).toLocaleString()} VNĐ`,
+        `${(
+          parseFloat(item.product.price) * item.quantity
+        ).toLocaleString()} VNĐ`,
     },
     {
       title: '',
@@ -77,7 +98,7 @@ function CartPage() {
       <Card size="small">
         <Table
           columns={tableColumn}
-          dataSource={cartList}
+          dataSource={cartItems.data}
           rowKey="productId"
           pagination={false}
         />
@@ -92,7 +113,7 @@ function CartPage() {
       <Row justify="end">
         <Button
           type="primary"
-          disabled={!cartList.length}
+          disabled={!cartItems.data.length}
           onClick={() => navigate(ROUTES.USER.CHECKOUT)}
         >
           Tiếp theo

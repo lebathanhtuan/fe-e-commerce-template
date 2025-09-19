@@ -12,7 +12,7 @@ import {
   Form,
   Input,
   Rate,
-  notification,
+  App,
 } from 'antd'
 import {
   ShoppingCartOutlined,
@@ -23,6 +23,7 @@ import {
 
 import { ROUTES } from '@constants/routes'
 import { getProduct } from '@redux/thunks/product.thunk'
+import { addToCart, getCartItems } from '@redux/thunks/cart.thunk'
 
 import * as S from './styled'
 
@@ -30,6 +31,7 @@ const ProductDetailPage = () => {
   const [reviewForm] = Form.useForm()
   const [quantity, setQuantity] = useState(1)
   const { id } = useParams()
+  const { notification } = App.useApp()
 
   const dispatch = useDispatch()
   const { myProfile } = useSelector((state) => state.auth)
@@ -45,7 +47,17 @@ const ProductDetailPage = () => {
   }, [id])
 
   const handleAddToCart = () => {
-    notification.success({ message: 'Thêm vào giỏ thành công' })
+    if (!myProfile.data.id) {
+      return notification.error({
+        message: 'Lỗi',
+        description: 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng',
+      })
+    }
+    dispatch(addToCart({ productId: parseInt(id), quantity }))
+    notification.success({
+      message: 'Thành công',
+      description: 'Thêm sản phẩm vào giỏ hàng thành công',
+    })
   }
 
   const handleToggleFavorite = () => {}

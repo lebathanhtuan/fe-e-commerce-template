@@ -19,6 +19,7 @@ function UserHeader() {
   const dispatch = useDispatch()
 
   const { myProfile } = useSelector((state) => state.auth)
+  const { cartItems } = useSelector((state) => state.cart)
 
   return (
     <S.HeaderContainer>
@@ -29,7 +30,7 @@ function UserHeader() {
         </Link>
       </S.HeaderNavigation>
       <Space size={24}>
-        <Badge count={3}>
+        <Badge count={cartItems.data.length}>
           <Link to={ROUTES.USER.CART}>
             <ShoppingCartOutlined style={{ fontSize: 24, color: 'white' }} />
           </Link>

@@ -23,11 +23,11 @@ function CheckoutPage() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const cartList = []
   const cityList = { data: [] }
   const districtList = { data: [] }
   const wardList = { data: [] }
   const { userInfo } = useSelector((state) => state.auth)
+  const { cartItems } = useSelector((state) => state.cart)
 
   const totalPrice = 0
 
@@ -36,6 +36,7 @@ function CheckoutPage() {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      render: (_, item) => item.product.name,
     },
     {
       title: 'Quantity',
@@ -47,7 +48,9 @@ function CheckoutPage() {
       dataIndex: 'total',
       key: 'total',
       render: (_, item) =>
-        `${(item.price * item.quantity).toLocaleString()} VND`,
+        `${(
+          parseFloat(item.product.price) * item.quantity
+        ).toLocaleString()} VND`,
     },
   ]
 
@@ -199,7 +202,7 @@ function CheckoutPage() {
             <Table
               size="small"
               columns={tableColumn}
-              dataSource={cartList}
+              dataSource={cartItems.data}
               rowKey="id"
               pagination={false}
             />

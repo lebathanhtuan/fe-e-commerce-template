@@ -17,6 +17,7 @@ export const categorySlice = createSlice({
     builder
       .addCase(getCategories.pending, (state) => {
         state.categoryList.status = 'loading'
+        state.categoryList.error = null
       })
       .addCase(getCategories.fulfilled, (state, action) => {
         state.categoryList.status = 'succeeded'
