@@ -42,7 +42,9 @@ function CartPage() {
     dispatch(updateCartItem({ id: cartId, quantity: value }))
   }
 
-  const handleDeleteCartItem = (productId) => {}
+  const handleDeleteCartItem = (id) => {
+    dispatch(deleteCartItem(id))
+  }
 
   const tableColumn = [
     {
@@ -85,7 +87,7 @@ function CartPage() {
       dataIndex: 'action',
       key: 'action',
       render: (_, item) => (
-        <Button danger onClick={() => handleDeleteCartItem(item.productId)}>
+        <Button danger onClick={() => handleDeleteCartItem(item.id)}>
           Xóa
         </Button>
       ),

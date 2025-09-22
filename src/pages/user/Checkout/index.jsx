@@ -16,20 +16,29 @@ import {
 } from 'antd'
 import { HomeOutlined } from '@ant-design/icons'
 
+import { getCities } from '@redux/thunks/address.thunk'
 import { ROUTES } from '@constants/routes'
+import { getDistricts, getWards } from '../../../redux/thunks/address.thunk'
+import { orderFormCart } from '../../../redux/thunks/order.thunk'
 
 function CheckoutPage() {
   const [checkoutForm] = Form.useForm()
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const cityList = { data: [] }
-  const districtList = { data: [] }
-  const wardList = { data: [] }
-  const { userInfo } = useSelector((state) => state.auth)
+  const { myProfile } = useSelector((state) => state.auth)
   const { cartItems } = useSelector((state) => state.cart)
+  const { cityList, districtList, wardList } = useSelector(
+    (state) => state.address
+  )
 
-  const totalPrice = 0
+  const totalPrice = useMemo(
+    () =>
+      cartItems.data.reduce((total, item) => {
+        return total + item.quantity * parseFloat(item.product.price)
+      }, 0),
+    [cartItems.data]
+  )
 
   const tableColumn = [
     {
@@ -54,7 +63,23 @@ function CheckoutPage() {
     },
   ]
 
-  const handleSubmitCheckoutForm = (values) => {}
+  const handleSubmitCheckoutForm = (values) => {
+    dispatch(orderFormCart(values))
+  }
+
+  useEffect(() => {
+    dispatch(getCities())
+  }, [])
+
+  useEffect(() => {
+    if (!myProfile.data.id) return
+    const { firstName, lastName, email, phone } = myProfile.data
+    checkoutForm.setFieldsValue({
+      recipientName: `${lastName} ${firstName}`,
+      recipientEmail: email,
+      recipientPhone: phone,
+    })
+  }, [myProfile.data.id])
 
   const renderCityOptions = useMemo(() => {
     return cityList.data.map((city) => (
@@ -102,7 +127,7 @@ function CheckoutPage() {
                 <Col span={24}>
                   <Form.Item
                     label="Họ và tên"
-                    name="fullName"
+                    name="recipientName"
                     rules={[{ required: true, message: 'Required!' }]}
                   >
                     <Input />
@@ -111,7 +136,7 @@ function CheckoutPage() {
                 <Col span={12}>
                   <Form.Item
                     label="Email"
-                    name="email"
+                    name="recipientEmail"
                     rules={[{ required: true, message: 'Required!' }]}
                   >
                     <Input />
@@ -120,7 +145,7 @@ function CheckoutPage() {
                 <Col span={12}>
                   <Form.Item
                     label="Số điện thoại"
-                    name="phoneNumber"
+                    name="recipientPhone"
                     rules={[{ required: true, message: 'Required!' }]}
                   >
                     <Input />
@@ -132,7 +157,18 @@ function CheckoutPage() {
                     name="cityCode"
                     rules={[{ required: true, message: 'Required!' }]}
                   >
-                    <Select allowClear>{renderCityOptions}</Select>
+                    <Select
+                      onChange={(value) => {
+                        dispatch(getDistricts({ cityCode: value }))
+                        checkoutForm.setFieldsValue({
+                          districtCode: undefined,
+                          wardCode: undefined,
+                        })
+                      }}
+                      allowClear
+                    >
+                      {renderCityOptions}
+                    </Select>
                   </Form.Item>
                 </Col>
                 <Col span={8}>
@@ -141,7 +177,18 @@ function CheckoutPage() {
                     name="districtCode"
                     rules={[{ required: true, message: 'Required!' }]}
                   >
-                    <Select allowClear>{renderDistrictOptions}</Select>
+                    <Select
+                      onChange={(value) => {
+                        dispatch(getWards({ districtCode: value }))
+                        checkoutForm.setFieldsValue({
+                          wardCode: undefined,
+                        })
+                      }}
+                      allowClear
+                      disabled={!checkoutForm.getFieldValue('cityCode')}
+                    >
+                      {renderDistrictOptions}
+                    </Select>
                   </Form.Item>
                 </Col>
                 <Col span={8}>
@@ -150,13 +197,18 @@ function CheckoutPage() {
                     name="wardCode"
                     rules={[{ required: true, message: 'Required!' }]}
                   >
-                    <Select allowClear>{renderWardOptions}</Select>
+                    <Select
+                      allowClear
+                      disabled={!checkoutForm.getFieldValue('districtCode')}
+                    >
+                      {renderWardOptions}
+                    </Select>
                   </Form.Item>
                 </Col>
                 <Col span={24}>
                   <Form.Item
                     label="Địa chỉ"
-                    name="address"
+                    name="shippingAddress"
                     rules={[{ required: true, message: 'Required!' }]}
                   >
                     <Input />
@@ -178,8 +230,8 @@ function CheckoutPage() {
                   >
                     <Radio.Group>
                       <Space direction="vertical">
-                        <Radio value="cod">COD</Radio>
-                        <Radio value="atm">ATM</Radio>
+                        <Radio value="COD">COD</Radio>
+                        <Radio value="BANK_TRANSFER">ATM</Radio>
                       </Space>
                     </Radio.Group>
                   </Form.Item>

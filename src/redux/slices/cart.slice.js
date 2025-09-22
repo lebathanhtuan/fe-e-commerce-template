@@ -89,7 +89,11 @@ export const cartSlice = createSlice({
         state.deleteCartItemData.status = 'loading'
         state.deleteCartItemData.error = null
       })
-      .addCase(deleteCartItem.fulfilled, (state) => {
+      .addCase(deleteCartItem.fulfilled, (state, action) => {
+        const { id } = action.payload
+        state.cartItems.data = state.cartItems.data.filter(
+          (item) => item.id !== id
+        )
         state.deleteCartItemData.status = 'succeeded'
       })
       .addCase(deleteCartItem.rejected, (state, action) => {

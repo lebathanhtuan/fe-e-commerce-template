@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 
 // Layout
@@ -33,6 +33,8 @@ import { getMyProfile } from './redux/thunks/auth.thunk'
 import { getCartItems } from './redux/thunks/cart.thunk'
 
 function App() {
+  const { pathname } = useLocation()
+
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -40,6 +42,10 @@ function App() {
     dispatch(getMyProfile())
     dispatch(getCartItems())
   }, [])
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
 
   return (
     <Routes>
