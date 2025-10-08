@@ -5,7 +5,9 @@ import categoryReducer from './redux/slices/category.slice'
 import reviewReducer from './redux/slices/review.slice'
 import cartReducer from './redux/slices/cart.slice'
 import addressReducer from './redux/slices/address.slice'
+import orderReducer from './redux/slices/order.slice'
 import commonReducer from './redux/slices/common.slice'
+import favoriteReducer from './redux/slices/favorite.slice'
 
 export default configureStore({
   reducer: {
@@ -15,6 +17,8 @@ export default configureStore({
     review: reviewReducer,
     cart: cartReducer,
     address: addressReducer,
+    order: orderReducer,
     common: commonReducer,
+    favorite: favoriteReducer,
   },
 })

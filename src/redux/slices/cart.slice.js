@@ -28,7 +28,13 @@ export const cartSlice = createSlice({
       error: null,
     },
   },
-  reducers: {},
+  reducers: {
+    clearCart: (state) => {
+      state.cartItems.data = []
+      state.cartItems.status = 'idle'
+      state.cartItems.error = null
+    },
+  },
   extraReducers: (builder) => {
     builder
       // getCartItems
@@ -103,4 +109,5 @@ export const cartSlice = createSlice({
   },
 })
 
+export const { clearCart } = cartSlice.actions
 export default cartSlice.reducer

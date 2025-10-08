@@ -11,6 +11,7 @@ import {
 
 import { ROUTES } from '@constants/routes'
 import { logout } from '@redux/slices/auth.slice'
+import { clearCart } from '@redux/slices/cart.slice'
 
 import * as S from './styled'
 
@@ -70,7 +71,10 @@ function UserHeader() {
                   {
                     key: '3',
                     label: 'Đăng xuất',
-                    onClick: () => dispatch(logout()),
+                    onClick: () => {
+                      dispatch(logout())
+                      dispatch(clearCart())
+                    },
                     icon: <LogoutOutlined />,
                   },
                 ],

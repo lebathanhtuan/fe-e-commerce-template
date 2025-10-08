@@ -25,7 +25,7 @@ function CartPage() {
   const totalPrice = useMemo(
     () =>
       cartItems.data.reduce((total, item) => {
-        return total + item.quantity * parseFloat(item.product.price)
+        return total + item.quantity * item.product.price
       }, 0),
     [cartItems.data]
   )
@@ -33,7 +33,7 @@ function CartPage() {
   // const totalPrice = useMemo(() => {
   //   let total = 0
   //   cartItems.data.forEach((item) => {
-  //     total += item.quantity * parseFloat(item.product.price)
+  //     total += item.quantity * item.product.price
   //   })
   //   return total
   // }, [cartItems.data])
@@ -58,7 +58,7 @@ function CartPage() {
       dataIndex: 'price',
       key: 'price',
       render: (_, item) => {
-        return `${parseFloat(item.product.price).toLocaleString()} VNĐ`
+        return `${item.product.price?.toLocaleString()} VNĐ`
       },
     },
     {
@@ -78,9 +78,7 @@ function CartPage() {
       dataIndex: 'total',
       key: 'total',
       render: (_, item) =>
-        `${(
-          parseFloat(item.product.price) * item.quantity
-        ).toLocaleString()} VNĐ`,
+        `${(item.product.price * item.quantity).toLocaleString()} VNĐ`,
     },
     {
       title: '',
@@ -108,7 +106,7 @@ function CartPage() {
       <Row justify="end" style={{ margin: '24px 0' }}>
         <Col span={8}>
           <Card size="small" title="Tổng tiền">
-            {totalPrice.toLocaleString()} VND
+            {totalPrice?.toLocaleString()} VND
           </Card>
         </Col>
       </Row>

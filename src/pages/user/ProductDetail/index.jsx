@@ -23,7 +23,11 @@ import {
 
 import { ROUTES } from '@constants/routes'
 import { getProduct } from '@redux/thunks/product.thunk'
-import { addToCart, getCartItems } from '@redux/thunks/cart.thunk'
+import { addToCart } from '@redux/thunks/cart.thunk'
+// import {
+//   addFavorite,
+//   deleteFavorite,
+// } from '@redux/thunks/favorite.thunk'
 
 import * as S from './styled'
 
@@ -38,13 +42,11 @@ const ProductDetailPage = () => {
   const { productDetail } = useSelector((state) => state.product)
   const { reviewList } = useSelector((state) => state.review)
 
-  const isFavorite = false
-
   const averageRate = 4.5
 
   useEffect(() => {
     dispatch(getProduct({ id: parseInt(id) }))
-  }, [id])
+  }, [id, myProfile.data.id, dispatch])
 
   const handleAddToCart = () => {
     if (!myProfile.data.id) {
@@ -60,7 +62,28 @@ const ProductDetailPage = () => {
     })
   }
 
-  const handleToggleFavorite = () => {}
+  const handleToggleFavorite = () => {
+    if (!myProfile.data.id) {
+      return notification.error({
+        message: 'Lỗi',
+        description: 'Vui lòng đăng nhập để thêm sản phẩm vào yêu thích',
+      })
+    }
+
+    // if (isFavorite) {
+    //   dispatch(deleteFavorite(parseInt(id)))
+    //   notification.success({
+    //     message: 'Thành công',
+    //     description: 'Đã xóa sản phẩm khỏi danh sách yêu thích',
+    //   })
+    // } else {
+    //   dispatch(addFavorite({ productId: parseInt(id) }))
+    //   notification.success({
+    //     message: 'Thành công',
+    //     description: 'Đã thêm sản phẩm vào danh sách yêu thích',
+    //   })
+    // }
+  }
 
   const handleReviewProduct = () => {}
 
@@ -158,7 +181,7 @@ const ProductDetailPage = () => {
               })`}</span>
             </Space>
             <h2 style={{ color: '#006363' }}>
-              {parseInt(productDetail.data.price).toLocaleString()} ₫
+              {productDetail.data.price?.toLocaleString()} ₫
             </h2>
             <div style={{ margin: '8px 0' }}>
               <InputNumber
@@ -176,7 +199,7 @@ const ProductDetailPage = () => {
               >
                 Add to cart
               </Button>
-              <Button
+              {/* <Button
                 size="large"
                 type="text"
                 danger={isFavorite}
@@ -189,7 +212,7 @@ const ProductDetailPage = () => {
                 }
                 onClick={() => handleToggleFavorite()}
               ></Button>
-              <p>0 Lượt thích</p>
+              <p>{favoriteCount} Lượt thích</p> */}
             </Space>
           </Col>
         </Row>

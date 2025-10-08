@@ -21,7 +21,7 @@ import { ROUTES } from '@constants/routes'
 import { getDistricts, getWards } from '../../../redux/thunks/address.thunk'
 import { orderFormCart } from '../../../redux/thunks/order.thunk'
 
-function CheckoutPage() {
+function CheckoutFormPage() {
   const [checkoutForm] = Form.useForm()
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -35,7 +35,7 @@ function CheckoutPage() {
   const totalPrice = useMemo(
     () =>
       cartItems.data.reduce((total, item) => {
-        return total + item.quantity * parseFloat(item.product.price)
+        return total + item.quantity * item.product.price
       }, 0),
     [cartItems.data]
   )
@@ -57,14 +57,17 @@ function CheckoutPage() {
       dataIndex: 'total',
       key: 'total',
       render: (_, item) =>
-        `${(
-          parseFloat(item.product.price) * item.quantity
-        ).toLocaleString()} VND`,
+        `${(item.product.price * item.quantity).toLocaleString()} VND`,
     },
   ]
 
   const handleSubmitCheckoutForm = (values) => {
-    dispatch(orderFormCart(values))
+    dispatch(
+      orderFormCart({
+        data: values,
+        callback: navigate(ROUTES.USER.CHECKOUT_SUCCESS),
+      })
+    )
   }
 
   useEffect(() => {
@@ -260,7 +263,7 @@ function CheckoutPage() {
             />
             <h4 style={{ marginTop: 16, textAlign: 'right' }}>Tổng tiền</h4>
             <p style={{ textAlign: 'right' }}>
-              {totalPrice.toLocaleString()} VND
+              {totalPrice?.toLocaleString()} VND
             </p>
           </Card>
         </Col>
@@ -269,4 +272,4 @@ function CheckoutPage() {
   )
 }
 
-export default CheckoutPage
+export default CheckoutFormPage

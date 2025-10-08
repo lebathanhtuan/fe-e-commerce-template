@@ -5,6 +5,7 @@ export const ROUTES = {
     PRODUCT_DETAIL: '/products/:id',
     CART: '/cart',
     CHECKOUT: '/checkout',
+    CHECKOUT_SUCCESS: '/checkout/success',
     // my-profile
     MY_PROFILE: {
       USER_INFO: '/my-profile/user-info',

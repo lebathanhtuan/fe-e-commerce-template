@@ -18,8 +18,10 @@ import ProductListPage from './pages/user/ProductList'
 import ProductDetailPage from './pages/user/ProductDetail'
 import CartPage from './pages/user/Cart'
 import CheckoutPage from './pages/user/Checkout'
+import CheckoutSuccessPage from './pages/user/CheckoutSuccess'
 import UserInfoPage from './pages/user/UserInfo'
 import ChangePasswordPage from './pages/user/ChangePassword'
+import OrderHistoryPage from './pages/user/OrderHistory'
 // Admin pages
 import DashboardPage from './pages/admin/Dashboard'
 import ProductManagementPage from './pages/admin/ProductManagement'
@@ -58,16 +60,20 @@ function App() {
         />
         <Route path={ROUTES.USER.CART} element={<CartPage />} />
         <Route path={ROUTES.USER.CHECKOUT} element={<CheckoutPage />} />
+        <Route
+          path={ROUTES.USER.CHECKOUT_SUCCESS}
+          element={<CheckoutSuccessPage />}
+        />
         <Route element={<MyProfileLayout />}>
           <Route
             path={ROUTES.USER.MY_PROFILE.USER_INFO}
             element={<UserInfoPage />}
           />
-          {/* <Route
+          <Route
             path={ROUTES.USER.MY_PROFILE.ORDER_HISTORY}
             element={<OrderHistoryPage />}
           />
-          <Route
+          {/* <Route
             path={ROUTES.USER.MY_PROFILE.FAVORITE_PRODUCTS}
             element={<FavoriteProductsPage />}
           /> */}
