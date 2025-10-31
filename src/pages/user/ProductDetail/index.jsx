@@ -24,10 +24,11 @@ import {
 import { ROUTES } from '@constants/routes'
 import { getProduct } from '@redux/thunks/product.thunk'
 import { addToCart } from '@redux/thunks/cart.thunk'
-// import {
-//   addFavorite,
-//   deleteFavorite,
-// } from '@redux/thunks/favorite.thunk'
+import {
+  getFavorites,
+  addFavorite,
+  removeFavorite,
+} from '@redux/thunks/favorite.thunk'
 
 import * as S from './styled'
 
@@ -41,11 +42,27 @@ const ProductDetailPage = () => {
   const { myProfile } = useSelector((state) => state.auth)
   const { productDetail } = useSelector((state) => state.product)
   const { reviewList } = useSelector((state) => state.review)
+  const { favoriteList } = useSelector((state) => state.favorite)
 
   const averageRate = 4.5
 
+  const isFavorite = useMemo(() => {
+    return favoriteList.data.some((item) => item.productId === parseInt(id))
+  }, [favoriteList.data, id])
+
+  const favoriteCount = useMemo(
+    () => productDetail.data.favoriteCount || 0,
+    [productDetail.data.favoriteCount]
+  )
+
   useEffect(() => {
     dispatch(getProduct({ id: parseInt(id) }))
+  }, [id, dispatch])
+
+  useEffect(() => {
+    if (myProfile.data.id) {
+      dispatch(getFavorites())
+    }
   }, [id, myProfile.data.id, dispatch])
 
   const handleAddToCart = () => {
@@ -70,19 +87,19 @@ const ProductDetailPage = () => {
       })
     }
 
-    // if (isFavorite) {
-    //   dispatch(deleteFavorite(parseInt(id)))
-    //   notification.success({
-    //     message: 'Thành công',
-    //     description: 'Đã xóa sản phẩm khỏi danh sách yêu thích',
-    //   })
-    // } else {
-    //   dispatch(addFavorite({ productId: parseInt(id) }))
-    //   notification.success({
-    //     message: 'Thành công',
-    //     description: 'Đã thêm sản phẩm vào danh sách yêu thích',
-    //   })
-    // }
+    if (isFavorite) {
+      dispatch(removeFavorite(parseInt(id)))
+      notification.success({
+        message: 'Thành công',
+        description: 'Đã xóa sản phẩm khỏi danh sách yêu thích',
+      })
+    } else {
+      dispatch(addFavorite({ productId: parseInt(id) }))
+      notification.success({
+        message: 'Thành công',
+        description: 'Đã thêm sản phẩm vào danh sách yêu thích',
+      })
+    }
   }
 
   const handleReviewProduct = () => {}
@@ -138,7 +155,7 @@ const ProductDetailPage = () => {
       )
     }
     return <S.ReviewFormWrapper>Bạn chưa đăng nhập</S.ReviewFormWrapper>
-  }, [myProfile.data])
+  }, [myProfile.data, reviewForm])
 
   const renderReviewList = useMemo(() => {
     return reviewList.data.map((item) => {
@@ -199,7 +216,7 @@ const ProductDetailPage = () => {
               >
                 Add to cart
               </Button>
-              {/* <Button
+              <Button
                 size="large"
                 type="text"
                 danger={isFavorite}
@@ -212,7 +229,7 @@ const ProductDetailPage = () => {
                 }
                 onClick={() => handleToggleFavorite()}
               ></Button>
-              <p>{favoriteCount} Lượt thích</p> */}
+              <p>{favoriteCount} Lượt thích</p>
             </Space>
           </Col>
         </Row>

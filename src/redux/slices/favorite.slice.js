@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import {
   getFavorites,
   addFavorite,
-  deleteFavorite,
+  removeFavorite,
 } from '../thunks/favorite.thunk'
 
 export const favoriteSlice = createSlice({
@@ -18,7 +18,7 @@ export const favoriteSlice = createSlice({
       status: 'idle',
       error: null,
     },
-    deleteFavoriteData: {
+    removeFavoriteData: {
       status: 'idle',
       error: null,
     },
@@ -60,20 +60,20 @@ export const favoriteSlice = createSlice({
         state.addFavoriteData.error = action.error.message
       })
 
-      // deleteFavorite
-      .addCase(deleteFavorite.pending, (state) => {
-        state.deleteFavoriteData.status = 'loading'
-        state.deleteFavoriteData.error = null
+      // removeFavorite
+      .addCase(removeFavorite.pending, (state) => {
+        state.removeFavoriteData.status = 'loading'
+        state.removeFavoriteData.error = null
       })
-      .addCase(deleteFavorite.fulfilled, (state, action) => {
-        state.deleteFavoriteData.status = 'succeeded'
+      .addCase(removeFavorite.fulfilled, (state, action) => {
+        state.removeFavoriteData.status = 'succeeded'
         state.favoriteList.data = state.favoriteList.data.filter(
           (item) => item.productId !== action.payload.productId
         )
       })
-      .addCase(deleteFavorite.rejected, (state, action) => {
-        state.deleteFavoriteData.status = 'failed'
-        state.deleteFavoriteData.error = action.error.message
+      .addCase(removeFavorite.rejected, (state, action) => {
+        state.removeFavoriteData.status = 'failed'
+        state.removeFavoriteData.error = action.error.message
       })
   },
 })

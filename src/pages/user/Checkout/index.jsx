@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import {
@@ -13,16 +13,23 @@ import {
   Space,
   Table,
   Breadcrumb,
+  Modal,
+  Alert,
 } from 'antd'
 import { HomeOutlined } from '@ant-design/icons'
 
 import { getCities } from '@redux/thunks/address.thunk'
 import { ROUTES } from '@constants/routes'
 import { getDistricts, getWards } from '../../../redux/thunks/address.thunk'
-import { orderFormCart } from '../../../redux/thunks/order.thunk'
+import { createOrder } from '../../../redux/thunks/order.thunk'
+import PayPalButton from '../../../components/PayPalButton'
 
 function CheckoutFormPage() {
   const [checkoutForm] = Form.useForm()
+  const [showPayPalModal, setShowPayPalModal] = useState(false)
+  const [orderFormData, setOrderFormData] = useState(null)
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null)
+
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -61,18 +68,70 @@ function CheckoutFormPage() {
     },
   ]
 
+  const getFullAddress = (values) => {
+    const city = cityList.data.find((c) => c.code === values.cityCode)?.name
+    const district = districtList.data.find(
+      (d) => d.code === values.districtCode
+    )?.name
+    const ward = wardList.data.find((w) => w.code === values.wardCode)?.name
+    return `${values.shippingAddress}, ${ward}, ${district}, ${city}`
+  }
+
   const handleSubmitCheckoutForm = (values) => {
+    const newValues = {
+      ...values,
+      shippingAddress: getFullAddress(values),
+    }
+    // Nếu chọn PayPal, hiển thị modal PayPal
+    if (values.paymentMethod === 'PAYPAL') {
+      setOrderFormData(newValues)
+      setSelectedPaymentMethod('PAYPAL')
+      setShowPayPalModal(true)
+    } else {
+      // COD - gọi API trực tiếp
+      dispatch(
+        createOrder({
+          data: newValues,
+          callback: () => navigate(ROUTES.USER.CHECKOUT_SUCCESS),
+        })
+      )
+    }
+  }
+
+  // Xử lý khi PayPal thanh toán thành công
+  const handlePayPalSuccess = (paypalData) => {
+    // Gọi API createOrder với thông tin PayPal
+    const orderData = {
+      ...orderFormData,
+      paypalTransactionId: paypalData.transactionId,
+      paypalPayerEmail: paypalData.payerEmail,
+    }
+
     dispatch(
-      orderFormCart({
-        data: values,
-        callback: navigate(ROUTES.USER.CHECKOUT_SUCCESS),
+      createOrder({
+        data: orderData,
+        callback: () => {
+          setShowPayPalModal(false)
+          navigate(ROUTES.USER.CHECKOUT_SUCCESS)
+        },
       })
     )
   }
 
+  // Xử lý khi PayPal có lỗi
+  const handlePayPalError = (error) => {
+    console.error('PayPal error:', error)
+    setShowPayPalModal(false)
+  }
+
+  // Xử lý khi hủy PayPal
+  const handlePayPalCancel = () => {
+    setShowPayPalModal(false)
+  }
+
   useEffect(() => {
     dispatch(getCities())
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     if (!myProfile.data.id) return
@@ -82,7 +141,7 @@ function CheckoutFormPage() {
       recipientEmail: email,
       recipientPhone: phone,
     })
-  }, [myProfile.data.id])
+  }, [myProfile.data, checkoutForm])
 
   const renderCityOptions = useMemo(() => {
     return cityList.data.map((city) => (
@@ -231,10 +290,12 @@ function CheckoutFormPage() {
                     name="paymentMethod"
                     rules={[{ required: true, message: 'Required!' }]}
                   >
-                    <Radio.Group>
+                    <Radio.Group
+                      onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                    >
                       <Space direction="vertical">
                         <Radio value="COD">COD</Radio>
-                        <Radio value="BANK_TRANSFER">ATM</Radio>
+                        <Radio value="PAYPAL">Paypal</Radio>
                       </Space>
                     </Radio.Group>
                   </Form.Item>
@@ -247,7 +308,9 @@ function CheckoutFormPage() {
                 Trở lại
               </Button>
               <Button type="primary" htmlType="submit">
-                Thanh toán
+                {selectedPaymentMethod === 'PAYPAL'
+                  ? 'Tiếp tục với PayPal'
+                  : 'Thanh toán'}
               </Button>
             </Row>
           </Form>
@@ -268,6 +331,39 @@ function CheckoutFormPage() {
           </Card>
         </Col>
       </Row>
+
+      {/* PayPal Payment Modal */}
+      <Modal
+        title="Thanh toán với PayPal"
+        open={showPayPalModal}
+        onCancel={handlePayPalCancel}
+        footer={null}
+        width={500}
+        destroyOnClose
+      >
+        <Alert
+          message="Thông tin đơn hàng"
+          description={
+            <div>
+              <p>Người nhận: {orderFormData?.recipientName}</p>
+              <p>Số điện thoại: {orderFormData?.recipientPhone}</p>
+              <p>Địa chỉ: {orderFormData?.shippingAddress}</p>
+              <p style={{ fontWeight: 'bold', fontSize: 16, marginTop: 8 }}>
+                Tổng tiền: {totalPrice?.toLocaleString()} VND
+              </p>
+            </div>
+          }
+          type="info"
+          style={{ marginBottom: 16 }}
+        />
+
+        <PayPalButton
+          amount={totalPrice}
+          onSuccess={handlePayPalSuccess}
+          onError={handlePayPalError}
+          onCancel={handlePayPalCancel}
+        />
+      </Modal>
     </>
   )
 }
